@@ -1,0 +1,9 @@
+{% extends layout %}
+{% block  content %}
+    <div>
+        {% for task in tasks %}
+        <h2>id:{{task.id}} {{task.task}} </h2>
+        <p>Completed {{task.completed}}</p>
+        {% endfor %}
+    </div>
+{% endblock %}

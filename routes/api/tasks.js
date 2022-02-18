@@ -14,11 +14,11 @@ router.get('/', async (req, res, next) => {
     await pool.promise()
         .query('SELECT * FROM tasks')
         .then(([rows, fields]) => {
-            res.render('tasks.njk', {
-                tasks: rows,
-                title:  'Tasks',
-                layout: 'layout.njk'
-            })
+            res.json({
+                tasks: {
+                    data: rows
+                }
+            });
         })
         .catch(err => {
             console.log(err)
@@ -30,14 +30,35 @@ router.get('/', async (req, res, next) => {
         })
 });
 
+router.post('/', async (req, res, next) => {
+    const task = req.body.task;
+    await pool.promise()
+        .query('INSERT INTO tasks (task) VALUES (?)', [task])
+        .then((response) => {
+            res.json({
+                task: {
+                    data: response
+                }
+            });
+        })
+        .catch(err => {
+            console.log(err)
+            res.status(500).json({
+                tasks: {
+                    error: 'Error getting tasks'
+                }
+            })
+        })
+})
 
 /* GET a form for posting a new task  */
 router.get('/new', (req, res, next) => {
-    res.render('tasksform.njk', {
+    let  data = {
         message: 'Post a new task',
         layout:  'layout.njk',
         title: 'Post a new task'
-    });
+    }
+    res.render('tasksform.njk', data);
 });
 
 /* POST a new task */
