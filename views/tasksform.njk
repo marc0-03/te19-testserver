@@ -1,0 +1,8 @@
+{% extends layout %}
+{% block  content %}
+    <h1>{{message}}</h1>
+    <form action="/tasks" method="post">
+        <textarea name="task" id="postArea" cols="30" rows="10"></textarea>
+        <button type="submit">Post</button>
+    </form>
+{% endblock %}

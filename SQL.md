@@ -17,7 +17,6 @@ exit
 ###
 mysql -u username -p
 
-
 show databases;
 use mysql;
 show tables;
@@ -35,18 +34,5 @@ INSERT INTO users (name) VALUES ('Marcus');
 ALTER TABLE users ADD password VARCHAR (255) NOT NULL;
 INSERT INTO users (name, password) VALUES ('Marcus', 'daugbro');
 
-##
-
-##
-
-##
-
-##
-
-##
-
-##
-
-##
-
-##
+delete from tasks WHERE id=4;
+update tasks SET completed = 1, updated_at=now() where id=1
