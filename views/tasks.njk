@@ -1,10 +1,9 @@
 {% extends layout %}
 {% block  content %}
 <main class="container">
-<h1>New Task</h1>
 <div>
     <form action="/tasks" method="post">
-    <label for="task">Task</label>
+    <label for="task"></label>
         <div class="input-group mb-3">
             <input type="text" class="form-control" name="task" id="task" value="{{ task }}" placeholder="Write a task" required>
             <input type="text" class="form-control" name="taskInfo" id="taskInfo" value="{{ taskInfo }}" placeholder="Write task information" required>
@@ -12,49 +11,82 @@
         </div>
     </form>
 </div>
-<h1>Display on active tasks</h1>
-<div class="d-flex">
+<h1>Display tasks</h1>
     {% for task in tasks %}
     {% if task.completed==0 %}
     <div class="card" style="width: 18rem;">
         <div class="card-body">
+            <div class="d-flex">
             <h5 class="card-title">{{task.task}}</h5>
-            <h6 class="card-subtitle mb-2 text-muted">Created: {{task.created_at}}</h6> 
             <p>
                 <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{task.id}}" aria-expanded="false" aria-controls="collapse{{task.id}}">
                 Information
                 </button>
             </p>
+            </div>
             <div class="collapse" id="collapse{{task.id}}">
-              <div class="card card-body">
-                {{task.taskInfo}}
-              </div>
+                <div class="card card-body">
+                     {{task.taskInfo}}
+                </div>
             </div>
              
                 <div class="d-flex">
-                <a href="/tasks/{{task.id}}/complete"><button type="button" class="btn btn-success">Complete</button></a>
-                <a href="/tasks/{{task.id}}/delete"><button type="button" class="btn btn-outline-danger">Delete</button></a>
-                <div>
+                    <div class="form-check me-3">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            value="{{task.completed}}"
+                            name="task-{{task.id}}"
+                            id="task-{{task.id}}"
+                            {% if task.completed %}checked{% endif %}>
+                        <label
+                            class="form-check-label"
+                            for="task-{{task.id}}">
+                            Completed
+                        </label>
+                    </div>
+                    <a href="/tasks/{{task.id}}/delete"><button type="button" class="btn btn-outline-danger">Delete</button></a>
+                </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="card bg-success" style="width: 18rem;">
+        <div class="card-body">
+            <div class="d-flex">
+            <h5 class="card-title">{{task.task}}</h5>
+            <p>
+                <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{task.id}}" aria-expanded="false" aria-controls="collapse{{task.id}}">
+                Information
+                </button>
+            </p>
+            </div>
+            <div class="collapse" id="collapse{{task.id}}">
+                <div class="card card-body">
+                     {{task.taskInfo}}
+                </div>
+            </div>
+             
+                <div class="d-flex">
+                    <div class="form-check me-3">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            value="{{task.completed}}"
+                            name="task-{{task.id}}"
+                            id="task-{{task.id}}"
+                            {% if task.completed %}checked{% endif %}>
+                        <label
+                            class="form-check-label"
+                            for="task-{{task.id}}">
+                            Completed
+                        </label>
+                    </div>
+                    <a href="/tasks/{{task.id}}/delete"><button type="button" class="btn btn-outline-danger">Delete</button></a>
+                </div>
         </div>
     </div>
     {% endif %}
     {% endfor %}
-    </div>
-<h1>Display completed tasks</h1>
-<ul class="list-group">
-    {% for task in tasks %}
-    {% if task.completed==1 %}
-    <div class="card" style="width: 18rem;">
-        <div class="card-body">
-        <h5 class="card-title">{{task.task}}</h5>
-        <h6 class="card-subtitle mb-2 text-muted">Created: {{task.created_at}}</h6>
-        <h6 class="card-subtitle mb-2 text-muted">Completed at: {{task.created_at}}</h6>  
-        <a href="/tasks/{{task.id}}/delete"><button type="button" class="btn btn-outline-danger">Delete</button></a>
-     </div>
-    </div>
-    {% endif %}
-    {% endfor %}
-</ul>
 </main>
-
+<script src="/js/complete.js"></script>
 {% endblock %}

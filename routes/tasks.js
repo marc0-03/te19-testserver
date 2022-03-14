@@ -12,10 +12,17 @@ const pool = require('../database');
     DELETE /:id - deleta a task by id
 */
 router.get('/', async (req, res, next) => {
+    const flash = req.session.flash;
+    const flashcolor = req.session.flashcolor;
+    console.log(flash);
+    req.session.flash = null;
+    req.session.flashcolor = null;
     await pool.promise()
         .query('SELECT * FROM tasks')
         .then(([rows, fields]) => {
             res.render('tasks.njk', {
+                flash: flash,
+                flashcolor: flashcolor,
                 tasks: rows,
                 title:  'Tasks',
                 layout: 'layout.njk'
@@ -29,16 +36,6 @@ router.get('/', async (req, res, next) => {
                 }
             })
         })
-});
-
-
-/* GET a form for posting a new task  */
-router.get('/new', (req, res, next) => {
-    res.render('tasksform.njk', {
-        message: 'Post a new task',
-        layout:  'layout.njk',
-        title: 'Post a new task'
-    });
 });
 
 /* POST a new task */
@@ -62,8 +59,9 @@ router.post('/', async (req, res, next) => {
     await pool.promise()
     .query(sql, [task, taskInfo])
     .then((response) => {
-        console.log(response[0].affectedRows);
         if (response[0].affectedRows==1) {
+            req.session.flash = 'Task: [' + task + "] successfully posted";
+            req.session.flashcolor = 'success';
         res.redirect('/tasks');
         } else {
             res.status(400).json({
@@ -117,8 +115,16 @@ router.get('/:id/delete', async (req, res, next) => {
     const id = req.params.id;
     await pool.promise()
         .query('DELETE from tasks WHERE id = ?', [id])
-        .then(() => {
+        .then((response) => {
+            if (response[0].affectedRows==1) {
+            req.session.flash = 'Task deleted';
+            req.session.flashcolor = 'success';
             res.redirect('/tasks');
+            } else {
+            req.session.flash = 'Task not found';
+            req.session.flashcolor = 'danger';
+            res.status(400).redirect('/tasks');
+            }
         })
         .catch(err => {
             console.log(err)
@@ -129,10 +135,10 @@ router.get('/:id/delete', async (req, res, next) => {
             })
         })
 })
-router.get('/:id/complete', async (req, res, next) => {
+router.post('/:id/complete', async (req, res, next) => {
     const id = req.params.id;
     await pool.promise()
-        .query('update tasks SET completed = 1, updated_at=now() where id = ?', [id])
+        .query('update tasks SET completed = !completed, updated_at=now() WHERE id = ?', [id])
         .then(() => {
             res.redirect('/tasks');
         })
@@ -149,7 +155,6 @@ router.get('/:id/complete', async (req, res, next) => {
 })
 
 router.post('/:id/update', async (req, res, next) => {
-
     const id = req.params.id
     const state = req.body.completed;
     await pool.promise()

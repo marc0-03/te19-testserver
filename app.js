@@ -4,12 +4,14 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const sassMiddleware = require('node-sass-middleware');
 const nunjucks = require('nunjucks');
+const session = require('express-session');
 
 require('dotenv').config();
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const tasksRouter = require('./routes/tasks');
+
 
 const app = express();
 
@@ -24,6 +26,12 @@ app.use(sassMiddleware({
   sourceMap: true
 }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+  secret: '5up3rh3m1i5', //only https
+  resave: false,
+  saveUninitialized: true,
+  cookie: { sameSite: true }
+}))
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
